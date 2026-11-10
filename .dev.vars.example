@@ -1,0 +1,8 @@
+# Choose at least one AI provider. Both enables Gemini -> Groq fallback.
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.1-flash-lite
+GROQ_API_KEY=
+GROQ_MODEL=qwen/qwen3.8-27b
+# Use a sandbox REST app only. No live PayPal endpoint is implemented.
+PAYPAL_CLIENT_ID=
+PAYPAL_CLIENT_SECRET=

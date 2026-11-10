@@ -1,0 +1,6 @@
+import { z } from 'zod';
+import { getDb } from '@/db';
+import { vendorProfiles } from '@/db/schema';
+import { user, checkOrigin, jsonBody, failure, AppError } from '@/lib/pact/server';
+const schema = z.object({ title: z.string().trim().min(5).max(100), bio: z.string().trim().min(15).max(500), skills: z.array(z.string().trim().min(2).max(40)).min(1).max(8), available: z.boolean().default(true) });
+export async function POST(request: Request) { try { checkOrigin(request); const u = await user(); if (u.role !== 'vendor') throw new AppError('Only vendor accounts can publish their own profile.', 403); const parsed = schema.safeParse(await jsonBody(request)); if (!parsed.success) throw new AppError(parsed.error.issues[0].message); const vendor = { id: u.userId, userId: u.userId, ...parsed.data, name: u.fullName, initials: u.fullName.split(' ').slice(0, 2).map(s => s[0]).join('').toUpperCase(), color: 'pink', demo: false }; await getDb().insert(vendorProfiles).values({ id: vendor.id, ownerId: u.userId, document: JSON.stringify(vendor) }).onConflictDoUpdate({ target: vendorProfiles.id, set: { document: JSON.stringify(vendor) } }); return Response.json({ vendor }); } catch (e) { return failure(e); } }

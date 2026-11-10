@@ -1,0 +1,1 @@
+export function message(role: 'client' | 'vendor' | 'agent' | 'system', text: string, agent?: 'Requirements' | 'Review' | 'Mediator', provider?: string) { return { id: crypto.randomUUID(), role, text, agent, provider, at: new Date().toISOString() }; }
